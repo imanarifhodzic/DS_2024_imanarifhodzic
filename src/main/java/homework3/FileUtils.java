@@ -1,35 +1,43 @@
 package homework3;
 
-import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.util.Scanner;
 
 public class FileUtils {
     // Below method is to read a file and return a RedBlackTree containing Entry objects
-    public static RedBlackTree<Entry> readFile(String filePath) throws FileNotFoundException {
-        // Now we need to create a new RedBlackTree to store the Entry objects
-        RedBlackTree<Entry> tree = new RedBlackTree<>();
-        File file = new File(filePath);
-        Scanner scanner = new Scanner(file);
-        //The above two lines of code represent creating a File and Scanner object for the given file path and to read the file.
-
-        //Now we go line by line
+    public static RedBlackTree readFile(String filePath) throws FileNotFoundException {
+        // implement the actual logic (remove next line)
+        RedBlackTree tree = new RedBlackTree();
+        Scanner scanner = new Scanner(new FileReader(filePath));
+        boolean isFirstLine = true;
         while (scanner.hasNextLine()) {
-            String line = scanner.nextLine();  // Read the next line from the file
-            String[] fields = line.split(";"); // Split the line into fields using ";" as the delimiter
+            String line = scanner.nextLine().trim();
+            if (isFirstLine) {
+                isFirstLine = false;
+                continue;
+            }
+            if (line.isEmpty()) continue;
 
-            String name = fields[0];
-            String streetAddress = fields[1];
-            String city = fields[2];            //Extracting the individual fields
-            String postcode = fields[3];
-            String country = fields[4];
-            String phoneNumber = fields[5];
+            String[] data = line.split(";");
+            if (data.length != 6) {
+                System.out.println("Invalid line skipped: " + line);
+                continue;
+            }
 
-            Entry entry = new Entry(name, streetAddress, city, postcode, country, phoneNumber); //Now we create a new Entry object, with the extracted fields
-            tree.put(name, entry); //And of course add the entry object to the tree
+            String[] nameParts = data[0].split(", ");
+            if (nameParts.length != 2) {
+                System.out.println("Invalid name field: " + data[0]);
+                continue;
+            }
+            String surname = nameParts[0];
+            String name = nameParts[1];
+
+            Entry entry = new Entry(surname, name, data[1], data[2], data[3], data[4], data[5]);
+            tree.put(surname + ", " + name, entry);
         }
-
         scanner.close();
-        return tree; //Return the populated tree
+        return tree;
+
     }
 }
